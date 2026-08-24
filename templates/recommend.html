@@ -1,0 +1,165 @@
+<!-- Movie Hero Showcase -->
+<div class="movie-hero-card">
+  <div class="poster-wrapper">
+    <img src="{{poster}}" alt="{{title}} poster" onerror="this.src='https://via.placeholder.com/260x390?text=No+Poster'">
+  </div>
+  <div class="movie-info">
+    <div class="movie-title-row">
+      <h2 class="movie-hero-title">{{title}}</h2>
+      <div class="rating-badge">
+        <i class="fas fa-star"></i>
+        <span>{{vote_average}} / 10</span>
+        <span style="font-size: 0.8rem; font-weight: 500; opacity: 0.8;">({{vote_count}} votes)</span>
+      </div>
+    </div>
+
+    <div class="meta-badges">
+      {% if genres %}
+        {% for g in genres.split(', ') %}
+          <span class="meta-badge genre-badge"><i class="fas fa-tag"></i> {{g}}</span>
+        {% endfor %}
+      {% endif %}
+      {% if release_date %}
+        <span class="meta-badge"><i class="far fa-calendar-alt"></i> {{release_date}}</span>
+      {% endif %}
+      {% if runtime %}
+        <span class="meta-badge"><i class="far fa-clock"></i> {{runtime}}</span>
+      {% endif %}
+      {% if status %}
+        <span class="meta-badge"><i class="fas fa-info-circle"></i> {{status}}</span>
+      {% endif %}
+    </div>
+
+    <div class="overview-box">
+      <div class="overview-label"><i class="fas fa-align-left"></i> Storyline Overview</div>
+      <p class="overview-text">{{overview}}</p>
+    </div>
+  </div>
+</div>
+
+<!-- Cast Biography Modals -->
+{% for name, details in cast_details.items() if not cast_details.hidden %}
+<div class="modal fade" id="{{details[0]}}" tabindex="-1" role="dialog" aria-labelledby="modalLabel-{{details[0]}}" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel-{{details[0]}}"><i class="fas fa-user-circle" style="color: var(--accent-primary); margin-right: 8px;"></i>{{name}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white; opacity: 0.8;">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <img class="modal-profile-img" src="{{details[1]}}" alt="{{name}} portrait" onerror="this.src='https://via.placeholder.com/180x270?text=No+Photo'" />
+        <div class="modal-bio-content">
+          {% if details[2] and details[2] != 'Invalid Date' %}
+          <div class="modal-meta-item">
+            <strong>Birthday</strong>
+            <span>{{details[2]}}</span>
+          </div>
+          {% endif %}
+
+          {% if details[3] and details[3] != 'None' %}
+          <div class="modal-meta-item">
+            <strong>Place of Birth</strong>
+            <span>{{details[3]}}</span>
+          </div>
+          {% endif %}
+
+          <div class="modal-meta-item">
+            <strong>Biography</strong>
+            <p style="color: #cbd5e1; line-height: 1.6; margin-top: 4px; white-space: pre-line;">
+              {{details[4] if details[4] else 'No biography available for this artist.'}}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius: var(--radius-pill); padding: 6px 20px;">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+<!-- Top Cast Section -->
+{% if casts|length > 1 %}
+<div class="section-header">
+  <h3 class="section-title"><i class="fas fa-users" style="color: var(--accent-primary); margin-right: 10px;"></i>Top Cast</h3>
+  <p class="section-subtitle">Click on any cast member to discover their biography and background</p>
+</div>
+
+<div class="cast-grid">
+  {% for name, details in casts.items() if not casts.hidden %}
+  <div class="cast-card" title="Click to view details for {{name}}" data-toggle="modal" data-target="#{{details[0]}}">
+    <div class="card-img-wrapper">
+      <img id="{{details[0]}}" alt="{{name}}" src="{{details[2]}}" onerror="this.src='https://via.placeholder.com/240x360?text=No+Photo'">
+      <div class="card-hover-overlay">
+        <span class="overlay-btn"><i class="fas fa-id-card"></i> View Bio</span>
+      </div>
+    </div>
+    <div class="card-details">
+      <h5 class="cast-name">{{name|title}}</h5>
+      <p class="cast-character"><i class="fas fa-theater-masks" style="font-size: 0.75rem; margin-right: 4px;"></i>{{details[1]|title}}</p>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- Audience Reviews & Sentiment Analysis -->
+<div class="section-header">
+  <h3 class="section-title"><i class="fas fa-comments" style="color: var(--accent-primary); margin-right: 10px;"></i>Audience Reviews & Sentiment Analysis</h3>
+  <p class="section-subtitle">Real-time IMDb user reviews classified via Machine Learning NLP</p>
+</div>
+
+<div class="reviews-container">
+  {% if reviews %}
+    <div class="reviews-grid">
+      {% for review, status in reviews.items() if not reviews.hidden %}
+      <div class="review-card">
+        <p class="review-text">"{{review}}"</p>
+        <div class="review-footer">
+          <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="fab fa-imdb"></i> IMDb User Review</span>
+          {% if status == 'Good' %}
+            <span class="sentiment-pill sentiment-good"><i class="fas fa-smile"></i> Positive</span>
+          {% else %}
+            <span class="sentiment-pill sentiment-bad"><i class="fas fa-frown"></i> Negative</span>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center" style="padding: 30px; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-subtle);">
+      <i class="fas fa-film" style="font-size: 2rem; color: var(--text-muted); margin-bottom: 12px;"></i>
+      <h4 style="color: var(--text-primary); margin-bottom: 6px;">No Audience Reviews Found</h4>
+      <p style="color: var(--text-secondary); margin: 0;">IMDb reviews are not yet available or this movie has not been released.</p>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Recommended Movies Section -->
+{% if movie_cards|length > 1 %}
+<div class="section-header" style="margin-top: 55px;">
+  <h3 class="section-title"><i class="fas fa-sparkles" style="color: var(--accent-gold); margin-right: 8px;"></i>Recommended Movies For You</h3>
+  <p class="section-subtitle">Based on cosine similarity of genre, director, actors, and keywords</p>
+</div>
+
+<div class="movie-grid">
+  {% for poster, rtitle in movie_cards.items() if not movie_cards.hidden %}
+  <div class="movie-card" title="{{rtitle}}" onclick="recommendcard(this)">
+    <div class="card-img-wrapper">
+      <img alt="{{rtitle}} poster" src="{{poster}}" onerror="this.src='https://via.placeholder.com/240x360?text=No+Poster'">
+      <div class="card-hover-overlay">
+        <span class="overlay-btn"><i class="fas fa-compass"></i> Explore</span>
+      </div>
+    </div>
+    <div class="card-details">
+      <h5 class="rec-movie-title">{{rtitle|title}}</h5>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}

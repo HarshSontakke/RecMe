@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>RecMe - AI Movie Recommender & Sentiment Analyzer</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Discover similar movies using Machine Learning and analyze audience sentiment from IMDb reviews.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+
+  <script type="text/javascript">
+    var films = {{suggestions|tojson}};
+  </script>
+</head>
+
+<body id="content">
+
+  <!-- Floating GitHub Button (Bottom-Left) -->
+  <a href="https://github.com" target="_blank" class="floating-github-btn" title="View Source on GitHub">
+    <i class="fab fa-github"></i>
+    <span>GitHub</span>
+  </a>
+
+  <!-- Hero Header -->
+  <header class="hero-header">
+    <div class="brand-logo" onclick="window.location.reload();">
+      <div class="brand-icon">
+        <i class="fas fa-play"></i>
+      </div>
+      <h1 class="brand-title">RecMe</h1>
+    </div>
+    <p class="brand-tagline">AI-Powered Content-Based Movie Recommender & Sentiment Analysis</p>
+
+    <!-- Search Section -->
+    <div class="search-container">
+      <div class="search-input-wrapper">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" name="movie" class="movie" id="autoComplete" autocomplete="off" placeholder="Search any movie (e.g. Inception, Avatar, Titanic...)" required />
+        <button class="movie-button" disabled="true" id="searchBtn">
+          <span>Recommend</span>
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Suggestion Chips -->
+    <div class="quick-chips">
+      <span class="chip-label">Try searching:</span>
+      <button type="button" class="chip-btn" data-movie="Inception">Inception</button>
+      <button type="button" class="chip-btn" data-movie="The Dark Knight">The Dark Knight</button>
+      <button type="button" class="chip-btn" data-movie="Interstellar">Interstellar</button>
+      <button type="button" class="chip-btn" data-movie="Avatar">Avatar</button>
+      <button type="button" class="chip-btn" data-movie="Fight Club">Fight Club</button>
+      <button type="button" class="chip-btn" data-movie="Titanic">Titanic</button>
+    </div>
+  </header>
+
+  <!-- Modern Cinematic Loader -->
+  <div id="loader">
+    <div class="loader-spinner-wrapper">
+      <div class="loader-ring"></div>
+      <div class="loader-text">Analyzing similarities & scraping sentiment...</div>
+    </div>
+  </div>
+
+  <!-- Error Notification -->
+  <div class="fail">
+    <h4><i class="fas fa-exclamation-circle"></i> Sorry! The movie you requested was not found in our database.</h4>
+    <p style="color: #94a3b8; margin: 8px 0 0; font-size: 0.9rem;">Please check the spelling or try selecting from the autocomplete suggestions.</p>
+  </div>
+
+  <!-- Featured & Trending Movies (Shown before searching) -->
+  <section class="featured-section" id="featuredSection" style="max-width: 1240px; margin: 20px auto 40px; padding: 0 20px; width: 100%;">
+    <div class="section-header" style="margin-top: 15px;">
+      <h3 class="section-title"><i class="fas fa-fire" style="color: #ff3b56; margin-right: 10px;"></i>Trending & Popular Movies</h3>
+      <p class="section-subtitle">Click any movie to instantly discover recommendations, top cast details, and sentiment analysis</p>
+    </div>
+
+    <div class="movie-grid">
+      {% for movie in popular_movies %}
+      <div class="movie-card" title="{{movie.title}}" onclick="recommendcard(this)">
+        <div class="card-img-wrapper">
+          <img alt="{{movie.title}} poster" src="{{movie.poster}}" onerror="this.src='https://via.placeholder.com/240x360?text=No+Poster'">
+          <div class="card-hover-overlay">
+            <span class="overlay-btn"><i class="fas fa-magic"></i> Recommend</span>
+          </div>
+        </div>
+        <div class="card-details">
+          <h5 class="rec-movie-title">{{movie.title}}</h5>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+            <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="far fa-calendar-alt"></i> {{movie.year}}</span>
+            <span style="font-size: 0.82rem; font-weight: 700; color: var(--accent-gold);"><i class="fas fa-star" style="font-size: 0.75rem;"></i> {{movie.rating}}</span>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Dynamic Results Container -->
+  <main class="results" style="display: none;">
+    <h2 id="name" class="text-uppercase text-center"></h2>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div>Crafted by <span class="footer-highlight">harszy</span> &bull; Powered by NLP, Cosine Similarity & TMDB</div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@7.2.0/dist/js/autoComplete.min.js"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='autocomplete.js') }}"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='recommend.js') }}"></script>
+
+</body>
+</html>
