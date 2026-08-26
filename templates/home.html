@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>RecMe - AI Movie Recommender & Sentiment Analyzer</title>
+  <title>RecMe - AI Movie & Web Series Recommender & Sentiment Analyzer</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="Discover similar movies using Machine Learning and analyze audience sentiment from IMDb reviews.">
+  <meta name="description" content="Discover similar movies and web series using Machine Learning and analyze audience sentiment from real user reviews.">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,16 +18,12 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
-
-  <script type="text/javascript">
-    var films = {{suggestions|tojson}};
-  </script>
 </head>
 
 <body id="content">
 
   <!-- Floating GitHub Button (Bottom-Left) -->
-  <a href="https://github.com" target="_blank" class="floating-github-btn" title="View Source on GitHub">
+  <a href="https://github.com/HarshSontakke/RecMe" target="_blank" class="floating-github-btn" title="View Source on GitHub">
     <i class="fab fa-github"></i>
     <span>GitHub</span>
   </a>
@@ -40,13 +36,13 @@
       </div>
       <h1 class="brand-title">RecMe</h1>
     </div>
-    <p class="brand-tagline">AI-Powered Content-Based Movie Recommender & Sentiment Analysis</p>
+    <p class="brand-tagline">AI-Powered Recommender & Sentiment Analysis for Movies & Web Series</p>
 
     <!-- Search Section -->
     <div class="search-container">
       <div class="search-input-wrapper">
         <i class="fas fa-search search-icon"></i>
-        <input type="text" name="movie" class="movie" id="autoComplete" autocomplete="off" placeholder="Search any movie (e.g. Inception, Avatar, Titanic...)" required />
+        <input type="text" name="movie" class="movie" id="autoComplete" autocomplete="off" placeholder="Search any movie or web series (e.g. Inception, Breaking Bad, Stranger Things...)" required />
         <button class="movie-button" disabled="true" id="searchBtn">
           <span>Recommend</span>
           <i class="fas fa-arrow-right"></i>
@@ -57,12 +53,12 @@
     <!-- Quick Suggestion Chips -->
     <div class="quick-chips">
       <span class="chip-label">Try searching:</span>
-      <button type="button" class="chip-btn" data-movie="Inception">Inception</button>
-      <button type="button" class="chip-btn" data-movie="The Dark Knight">The Dark Knight</button>
-      <button type="button" class="chip-btn" data-movie="Interstellar">Interstellar</button>
-      <button type="button" class="chip-btn" data-movie="Avatar">Avatar</button>
-      <button type="button" class="chip-btn" data-movie="Fight Club">Fight Club</button>
-      <button type="button" class="chip-btn" data-movie="Titanic">Titanic</button>
+      <button type="button" class="chip-btn" data-title="Inception" data-type="movie" data-id="27205">Inception</button>
+      <button type="button" class="chip-btn" data-title="Breaking Bad" data-type="tv" data-id="1396">Breaking Bad</button>
+      <button type="button" class="chip-btn" data-title="Stranger Things" data-type="tv" data-id="66732">Stranger Things</button>
+      <button type="button" class="chip-btn" data-title="The Dark Knight" data-type="movie" data-id="155">The Dark Knight</button>
+      <button type="button" class="chip-btn" data-title="Dark" data-type="tv" data-id="70523">Dark</button>
+      <button type="button" class="chip-btn" data-title="Interstellar" data-type="movie" data-id="157336">Interstellar</button>
     </div>
   </header>
 
@@ -70,37 +66,42 @@
   <div id="loader">
     <div class="loader-spinner-wrapper">
       <div class="loader-ring"></div>
-      <div class="loader-text">Analyzing similarities & scraping sentiment...</div>
+      <div class="loader-text">Analyzing similarities & classifying audience sentiment...</div>
     </div>
   </div>
 
   <!-- Error Notification -->
   <div class="fail">
-    <h4><i class="fas fa-exclamation-circle"></i> Sorry! The movie you requested was not found in our database.</h4>
-    <p style="color: #94a3b8; margin: 8px 0 0; font-size: 0.9rem;">Please check the spelling or try selecting from the autocomplete suggestions.</p>
+    <h4><i class="fas fa-exclamation-circle"></i> Sorry! We couldn't find details for the requested movie or series.</h4>
+    <p style="color: #94a3b8; margin: 8px 0 0; font-size: 0.9rem;">Please check the spelling or select from the live suggestions dropdown.</p>
   </div>
 
-  <!-- Featured & Trending Movies (Shown before searching) -->
+  <!-- Featured & Trending Section (Shown before searching) -->
   <section class="featured-section" id="featuredSection" style="max-width: 1240px; margin: 20px auto 40px; padding: 0 20px; width: 100%;">
     <div class="section-header" style="margin-top: 15px;">
-      <h3 class="section-title"><i class="fas fa-fire" style="color: #ff3b56; margin-right: 10px;"></i>Trending & Popular Movies</h3>
-      <p class="section-subtitle">Click any movie to instantly discover recommendations, top cast details, and sentiment analysis</p>
+      <h3 class="section-title"><i class="fas fa-fire" style="color: #ff3b56; margin-right: 10px;"></i>Trending Movies & Acclaimed Web Series</h3>
+      <p class="section-subtitle">Click any title to instantly discover recommendations, cast biographies, and NLP sentiment analysis</p>
     </div>
 
     <div class="movie-grid">
-      {% for movie in popular_movies %}
-      <div class="movie-card" title="{{movie.title}}" onclick="recommendcard(this)">
+      {% for item in popular_titles %}
+      <div class="movie-card" title="{{item.title}}" data-title="{{item.title}}" data-media-type="{{item.media_type}}" data-id="{{item.id}}" onclick="recommendcard(this)">
         <div class="card-img-wrapper">
-          <img alt="{{movie.title}} poster" src="{{movie.poster}}" onerror="this.src='https://via.placeholder.com/240x360?text=No+Poster'">
+          <img alt="{{item.title}} poster" src="{{item.poster}}" onerror="this.src='https://via.placeholder.com/240x360?text=No+Poster'">
           <div class="card-hover-overlay">
             <span class="overlay-btn"><i class="fas fa-magic"></i> Recommend</span>
           </div>
+          {% if item.media_type == 'tv' %}
+            <span class="card-type-badge tv-badge"><i class="fas fa-tv"></i> Series</span>
+          {% else %}
+            <span class="card-type-badge movie-badge"><i class="fas fa-film"></i> Movie</span>
+          {% endif %}
         </div>
         <div class="card-details">
-          <h5 class="rec-movie-title">{{movie.title}}</h5>
+          <h5 class="rec-movie-title">{{item.title}}</h5>
           <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
-            <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="far fa-calendar-alt"></i> {{movie.year}}</span>
-            <span style="font-size: 0.82rem; font-weight: 700; color: var(--accent-gold);"><i class="fas fa-star" style="font-size: 0.75rem;"></i> {{movie.rating}}</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="far fa-calendar-alt"></i> {{item.year}}</span>
+            <span style="font-size: 0.82rem; font-weight: 700; color: var(--accent-gold);"><i class="fas fa-star" style="font-size: 0.75rem;"></i> {{item.rating}}</span>
           </div>
         </div>
       </div>
@@ -115,7 +116,7 @@
 
   <!-- Footer -->
   <footer class="site-footer">
-    <div>Crafted by <span class="footer-highlight">harszy</span> &bull; Powered by NLP, Cosine Similarity & TMDB</div>
+    <div>Crafted by <span class="footer-highlight">harszy</span> &bull; Powered by NLP, TMDB & Machine Learning</div>
   </footer>
 
   <!-- Scripts -->

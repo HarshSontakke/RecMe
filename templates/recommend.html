@@ -1,7 +1,12 @@
-<!-- Movie Hero Showcase -->
+<!-- Movie & Series Hero Showcase -->
 <div class="movie-hero-card">
   <div class="poster-wrapper">
     <img src="{{poster}}" alt="{{title}} poster" onerror="this.src='https://via.placeholder.com/260x390?text=No+Poster'">
+    {% if media_type == 'tv' %}
+      <span class="hero-type-badge tv-badge"><i class="fas fa-tv"></i> Web Series</span>
+    {% else %}
+      <span class="hero-type-badge movie-badge"><i class="fas fa-film"></i> Movie</span>
+    {% endif %}
   </div>
   <div class="movie-info">
     <div class="movie-title-row">
@@ -19,12 +24,24 @@
           <span class="meta-badge genre-badge"><i class="fas fa-tag"></i> {{g}}</span>
         {% endfor %}
       {% endif %}
-      {% if release_date %}
+      
+      {% if release_date and release_date != 'Unknown' %}
         <span class="meta-badge"><i class="far fa-calendar-alt"></i> {{release_date}}</span>
       {% endif %}
-      {% if runtime %}
-        <span class="meta-badge"><i class="far fa-clock"></i> {{runtime}}</span>
+      
+      {% if media_type == 'tv' %}
+        {% if seasons %}
+          <span class="meta-badge series-meta"><i class="fas fa-layer-group"></i> {{seasons}}</span>
+        {% endif %}
+        {% if episodes %}
+          <span class="meta-badge series-meta"><i class="fas fa-list-ol"></i> {{episodes}}</span>
+        {% endif %}
+      {% else %}
+        {% if runtime and runtime != 'N/A' %}
+          <span class="meta-badge"><i class="far fa-clock"></i> {{runtime}}</span>
+        {% endif %}
       {% endif %}
+
       {% if status %}
         <span class="meta-badge"><i class="fas fa-info-circle"></i> {{status}}</span>
       {% endif %}
@@ -52,14 +69,14 @@
       <div class="modal-body">
         <img class="modal-profile-img" src="{{details[1]}}" alt="{{name}} portrait" onerror="this.src='https://via.placeholder.com/180x270?text=No+Photo'" />
         <div class="modal-bio-content">
-          {% if details[2] and details[2] != 'Invalid Date' %}
+          {% if details[2] and details[2] != 'Invalid Date' and details[2] != 'N/A' %}
           <div class="modal-meta-item">
             <strong>Birthday</strong>
             <span>{{details[2]}}</span>
           </div>
           {% endif %}
 
-          {% if details[3] and details[3] != 'None' %}
+          {% if details[3] and details[3] != 'None' and details[3] != 'N/A' %}
           <div class="modal-meta-item">
             <strong>Place of Birth</strong>
             <span>{{details[3]}}</span>
@@ -84,10 +101,10 @@
 {% endfor %}
 
 <!-- Top Cast Section -->
-{% if casts|length > 1 %}
+{% if casts|length >= 1 %}
 <div class="section-header">
   <h3 class="section-title"><i class="fas fa-users" style="color: var(--accent-primary); margin-right: 10px;"></i>Top Cast</h3>
-  <p class="section-subtitle">Click on any cast member to discover their biography and background</p>
+  <p class="section-subtitle">Click on any cast member to view their biography and background</p>
 </div>
 
 <div class="cast-grid">
@@ -111,7 +128,7 @@
 <!-- Audience Reviews & Sentiment Analysis -->
 <div class="section-header">
   <h3 class="section-title"><i class="fas fa-comments" style="color: var(--accent-primary); margin-right: 10px;"></i>Audience Reviews & Sentiment Analysis</h3>
-  <p class="section-subtitle">Real-time IMDb user reviews classified via Machine Learning NLP</p>
+  <p class="section-subtitle">Real audience feedback analyzed & classified in real-time via Machine Learning NLP</p>
 </div>
 
 <div class="reviews-container">
@@ -121,7 +138,7 @@
       <div class="review-card">
         <p class="review-text">"{{review}}"</p>
         <div class="review-footer">
-          <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="fab fa-imdb"></i> IMDb User Review</span>
+          <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="fas fa-user-check"></i> Audience Review</span>
           {% if status == 'Good' %}
             <span class="sentiment-pill sentiment-good"><i class="fas fa-smile"></i> Positive</span>
           {% else %}
@@ -135,29 +152,34 @@
     <div class="text-center" style="padding: 30px; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-subtle);">
       <i class="fas fa-film" style="font-size: 2rem; color: var(--text-muted); margin-bottom: 12px;"></i>
       <h4 style="color: var(--text-primary); margin-bottom: 6px;">No Audience Reviews Found</h4>
-      <p style="color: var(--text-secondary); margin: 0;">IMDb reviews are not yet available or this movie has not been released.</p>
+      <p style="color: var(--text-secondary); margin: 0;">Reviews are not yet available or this title has not been released.</p>
     </div>
   {% endif %}
 </div>
 
-<!-- Recommended Movies Section -->
-{% if movie_cards|length > 1 %}
+<!-- Recommended Movies & Series Section -->
+{% if recommended_cards|length >= 1 %}
 <div class="section-header" style="margin-top: 55px;">
-  <h3 class="section-title"><i class="fas fa-sparkles" style="color: var(--accent-gold); margin-right: 8px;"></i>Recommended Movies For You</h3>
-  <p class="section-subtitle">Based on cosine similarity of genre, director, actors, and keywords</p>
+  <h3 class="section-title"><i class="fas fa-sparkles" style="color: var(--accent-gold); margin-right: 8px;"></i>Recommended Similar Titles</h3>
+  <p class="section-subtitle">AI-powered recommendations based on content similarity, genre, cast & audience affinity</p>
 </div>
 
 <div class="movie-grid">
-  {% for poster, rtitle in movie_cards.items() if not movie_cards.hidden %}
-  <div class="movie-card" title="{{rtitle}}" onclick="recommendcard(this)">
+  {% for card in recommended_cards %}
+  <div class="movie-card" title="{{card.title}}" data-title="{{card.title}}" data-media-type="{{card.media_type}}" data-id="{{card.id}}" onclick="recommendcard(this)">
     <div class="card-img-wrapper">
-      <img alt="{{rtitle}} poster" src="{{poster}}" onerror="this.src='https://via.placeholder.com/240x360?text=No+Poster'">
+      <img alt="{{card.title}} poster" src="{{card.poster}}" onerror="this.src='https://via.placeholder.com/240x360?text=No+Poster'">
       <div class="card-hover-overlay">
         <span class="overlay-btn"><i class="fas fa-compass"></i> Explore</span>
       </div>
+      {% if card.media_type == 'tv' %}
+        <span class="card-type-badge tv-badge"><i class="fas fa-tv"></i> Series</span>
+      {% else %}
+        <span class="card-type-badge movie-badge"><i class="fas fa-film"></i> Movie</span>
+      {% endif %}
     </div>
     <div class="card-details">
-      <h5 class="rec-movie-title">{{rtitle|title}}</h5>
+      <h5 class="rec-movie-title">{{card.title|title}}</h5>
     </div>
   </div>
   {% endfor %}
