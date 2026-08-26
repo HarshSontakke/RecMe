@@ -1,3 +1,15 @@
+function clearAutoCompleteDropdown() {
+  const lists = document.querySelectorAll("#food_list, #autoComplete_list, .autoComplete_list");
+  lists.forEach(list => {
+    list.innerHTML = "";
+  });
+  const input = document.getElementById('autoComplete');
+  if (input && document.activeElement === input) {
+    input.blur();
+  }
+}
+window.clearAutoCompleteDropdown = clearAutoCompleteDropdown;
+
 new autoComplete({
   data: {
     src: typeof films !== 'undefined' ? films : [],
@@ -36,13 +48,18 @@ new autoComplete({
   },
   onSelection: feedback => {
     const input = document.getElementById('autoComplete');
+    const selectedMovie = feedback.selection.value;
     if (input) {
-      input.value = feedback.selection.value;
+      input.value = selectedMovie;
       const btn = document.querySelector('.movie-button');
       if (btn) {
         btn.removeAttribute('disabled');
       }
-      triggerSearch(feedback.selection.value);
+    }
+    clearAutoCompleteDropdown();
+    setTimeout(clearAutoCompleteDropdown, 10);
+    if (typeof triggerSearch === 'function') {
+      triggerSearch(selectedMovie);
     }
   }
 });

@@ -6,6 +6,9 @@ $(function() {
     source.addEventListener('input', function(e) {
       if (e.target.value.trim() === "") {
         $('.movie-button').attr('disabled', true);
+        if (typeof clearAutoCompleteDropdown === 'function') {
+          clearAutoCompleteDropdown();
+        }
       } else {
         $('.movie-button').attr('disabled', false);
       }
@@ -17,6 +20,9 @@ $(function() {
         e.preventDefault();
         var title = $(source).val().trim();
         if (title !== "") {
+          if (typeof clearAutoCompleteDropdown === 'function') {
+            clearAutoCompleteDropdown();
+          }
           triggerSearch(title);
         }
       }
@@ -30,6 +36,9 @@ $(function() {
       $('.results').css('display', 'none');
       $('.fail').css('display', 'block');
     } else {
+      if (typeof clearAutoCompleteDropdown === 'function') {
+        clearAutoCompleteDropdown();
+      }
       triggerSearch(title);
     }
   });
@@ -40,18 +49,45 @@ $(function() {
     if (movieName) {
       $('#autoComplete').val(movieName);
       $('.movie-button').attr('disabled', false);
+      if (typeof clearAutoCompleteDropdown === 'function') {
+        clearAutoCompleteDropdown();
+      }
       triggerSearch(movieName);
+    }
+  });
+
+  // Click outside search container to dismiss dropdown
+  $(document).on('click', function(e) {
+    if (!$(e.target).closest('.search-container').length) {
+      if (typeof clearAutoCompleteDropdown === 'function') {
+        clearAutoCompleteDropdown();
+      }
+    }
+  });
+
+  // Press Escape to dismiss dropdown
+  $(document).on('keydown', function(e) {
+    if (e.key === 'Escape' || e.keyCode === 27) {
+      if (typeof clearAutoCompleteDropdown === 'function') {
+        clearAutoCompleteDropdown();
+      }
     }
   });
 });
 
 function triggerSearch(title) {
+  if (typeof clearAutoCompleteDropdown === 'function') {
+    clearAutoCompleteDropdown();
+  }
   var my_api_key = 'd47509337b8e8d779853e5b2a838c4db';
   load_details(my_api_key, title);
 }
 
 // Invoked when clicking on a recommended movie card
 function recommendcard(e) {
+  if (typeof clearAutoCompleteDropdown === 'function') {
+    clearAutoCompleteDropdown();
+  }
   var my_api_key = 'd47509337b8e8d779853e5b2a838c4db';
   var title = e.getAttribute('title'); 
   if (title) {
@@ -204,6 +240,9 @@ function show_details(movie_details, arr, movie_title, my_api_key, movie_id) {
       $('.results').html(response).fadeIn(350);
       $('#autoComplete').val('');
       $('.movie-button').attr('disabled', true);
+      if (typeof clearAutoCompleteDropdown === 'function') {
+        clearAutoCompleteDropdown();
+      }
       
       // Smooth scroll into results view
       $('html, body').animate({
