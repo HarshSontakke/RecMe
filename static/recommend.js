@@ -236,7 +236,7 @@ function show_details(movie_details, arr, movie_title, my_api_key, movie_id) {
       $("#loader").fadeOut(300);
     },
     success: function(response) {
-      $('#featuredSection').fadeOut(250);
+      $('#featuredSection').hide();
       $('.results').html(response).fadeIn(350);
       $('#autoComplete').val('');
       $('.movie-button').attr('disabled', true);
@@ -244,10 +244,10 @@ function show_details(movie_details, arr, movie_title, my_api_key, movie_id) {
         clearAutoCompleteDropdown();
       }
       
-      // Smooth scroll into results view
+      // Smooth scroll to top to show search bar, movie poster and info
       $('html, body').animate({
-        scrollTop: $('.results').offset().top - 20
-      }, 500);
+        scrollTop: 0
+      }, 400);
     },
     error: function() {
       $('.fail').fadeIn(300);
