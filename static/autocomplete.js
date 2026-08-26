@@ -31,7 +31,7 @@ new autoComplete({
             year: (item.release_date || item.first_air_date || '').substring(0, 4),
             poster: item.poster_path 
               ? `https://image.tmdb.org/t/p/w92${item.poster_path}` 
-              : 'https://via.placeholder.com/45x68?text=No+Img'
+              : "data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'45\' height=\'68\' viewBox=\'0 0 45 68\'><rect width=\'45\' height=\'68\' fill=\'%23131722\'/><text x=\'50%\' y=\'55%\' fill=\'%2364748b\' font-family=\'sans-serif\' font-size=\'16\' text-anchor=\'middle\'>🎬</text></svg>"
           }));
       } catch (e) {
         console.error("Autocomplete fetch error:", e);
@@ -68,7 +68,7 @@ new autoComplete({
 
       source.innerHTML = `
         <div class="result-movie-row">
-          <img class="result-thumb" src="${item.poster}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/45x68?text=No+Img'">
+          <img class="result-thumb" src="${item.poster}" alt="${item.title}" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=\\\'http://www.w3.org/2000/svg\\\' width=\\\'45\\\' height=\\\'68\\\' viewBox=\\\'0 0 45 68\\\'><rect width=\\\'45\\\' height=\\\'68\\\' fill=\\\'%23131722\\\'/><text x=\\\'50%\\\' y=\\\'55%\\\' fill=\\\'%2364748b\\\' font-family=\\\'sans-serif\\\' font-size=\\\'16\\\' text-anchor=\\\'middle\\\'>🎬</text></svg>';">
           <div class="result-info">
             <div class="result-title-line">
               <span class="result-movie-text">${data.match}</span>

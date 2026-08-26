@@ -1,7 +1,7 @@
 <!-- Movie & Series Hero Showcase -->
 <div class="movie-hero-card">
   <div class="poster-wrapper">
-    <img src="{{poster}}" alt="{{title}} poster" onerror="this.src='https://via.placeholder.com/260x390?text=No+Poster'">
+    <img src="{{poster}}" alt="{{title}} poster" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'240\' height=\'360\' viewBox=\'0 0 240 360\'><rect width=\'240\' height=\'360\' fill=\'%23131722\'/><text x=\'50%\' y=\'48%\' fill=\'%2364748b\' font-family=\'sans-serif\' font-size=\'32\' text-anchor=\'middle\'>🎬</text><text x=\'50%\' y=\'62%\' fill=\'%2394a3b8\' font-family=\'sans-serif\' font-size=\'14\' font-weight=\'600\' text-anchor=\'middle\'>No Poster</text></svg>';">
     {% if media_type == 'tv' %}
       <span class="hero-type-badge tv-badge"><i class="fas fa-tv"></i> Web Series</span>
     {% else %}
@@ -67,7 +67,7 @@
       </div>
 
       <div class="modal-body">
-        <img class="modal-profile-img" src="{{details[1]}}" alt="{{name}} portrait" onerror="this.src='https://via.placeholder.com/180x270?text=No+Photo'" />
+        <img class="modal-profile-img" src="{{details[1]}}" alt="{{name}} portrait" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'240\' height=\'360\' viewBox=\'0 0 240 360\'><rect width=\'240\' height=\'360\' fill=\'%23131722\'/><text x=\'50%\' y=\'48%\' fill=\'%2364748b\' font-family=\'sans-serif\' font-size=\'32\' text-anchor=\'middle\'>👤</text><text x=\'50%\' y=\'62%\' fill=\'%2394a3b8\' font-family=\'sans-serif\' font-size=\'14\' font-weight=\'600\' text-anchor=\'middle\'>No Photo</text></svg>';" />
         <div class="modal-bio-content">
           {% if details[2] and details[2] != 'Invalid Date' and details[2] != 'N/A' %}
           <div class="modal-meta-item">
@@ -111,7 +111,7 @@
   {% for name, details in casts.items() if not casts.hidden %}
   <div class="cast-card" title="Click to view details for {{name}}" data-toggle="modal" data-target="#{{details[0]}}">
     <div class="card-img-wrapper">
-      <img id="{{details[0]}}" alt="{{name}}" src="{{details[2]}}" onerror="this.src='https://via.placeholder.com/240x360?text=No+Photo'">
+      <img id="{{details[0]}}" alt="{{name}}" src="{{details[2]}}" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'240\' height=\'360\' viewBox=\'0 0 240 360\'><rect width=\'240\' height=\'360\' fill=\'%23131722\'/><text x=\'50%\' y=\'48%\' fill=\'%2364748b\' font-family=\'sans-serif\' font-size=\'32\' text-anchor=\'middle\'>👤</text><text x=\'50%\' y=\'62%\' fill=\'%2394a3b8\' font-family=\'sans-serif\' font-size=\'14\' font-weight=\'600\' text-anchor=\'middle\'>No Photo</text></svg>';">
       <div class="card-hover-overlay">
         <span class="overlay-btn"><i class="fas fa-id-card"></i> View Bio</span>
       </div>
@@ -168,7 +168,7 @@
   {% for card in recommended_cards %}
   <div class="movie-card" title="{{card.title}}" data-title="{{card.title}}" data-media-type="{{card.media_type}}" data-id="{{card.id}}" onclick="recommendcard(this)">
     <div class="card-img-wrapper">
-      <img alt="{{card.title}} poster" src="{{card.poster}}" onerror="this.src='https://via.placeholder.com/240x360?text=No+Poster'">
+      <img alt="{{card.title}} poster" src="{{card.poster}}" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'240\' height=\'360\' viewBox=\'0 0 240 360\'><rect width=\'240\' height=\'360\' fill=\'%23131722\'/><text x=\'50%\' y=\'48%\' fill=\'%2364748b\' font-family=\'sans-serif\' font-size=\'32\' text-anchor=\'middle\'>🎬</text><text x=\'50%\' y=\'62%\' fill=\'%2394a3b8\' font-family=\'sans-serif\' font-size=\'14\' font-weight=\'600\' text-anchor=\'middle\'>No Poster</text></svg>';">
       <div class="card-hover-overlay">
         <span class="overlay-btn"><i class="fas fa-compass"></i> Explore</span>
       </div>

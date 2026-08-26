@@ -104,10 +104,44 @@ function recommendcard(e) {
   }
 }
 
+let loaderInterval = null;
+const loaderPhrases = [
+  { icon: 'fas fa-film', text: 'Scanning movie & series databases across TMDB...' },
+  { icon: 'fas fa-sparkles', text: 'Analyzing storyline connections & similarity...' },
+  { icon: 'fas fa-users', text: 'Fetching cast biographies & high-res posters...' },
+  { icon: 'fas fa-brain', text: 'Running NLP sentiment model on real user reviews...' },
+  { icon: 'fas fa-ticket-alt', text: 'Curating tailored recommendations for you...' }
+];
+
+function startLoaderAnimation() {
+  let step = 0;
+  $('#loaderStatusText').text(loaderPhrases[0].text);
+  $('#loaderIcon').attr('class', loaderPhrases[0].icon);
+
+  clearInterval(loaderInterval);
+  loaderInterval = setInterval(() => {
+    step = (step + 1) % loaderPhrases.length;
+    $('#loaderStatusText').fadeOut(120, function() {
+      $(this).text(loaderPhrases[step].text).fadeIn(120);
+    });
+    $('#loaderIcon').fadeOut(120, function() {
+      $(this).attr('class', loaderPhrases[step].icon).fadeIn(120);
+    });
+  }, 1400);
+
+  $("#loader").css('display', 'flex').hide().fadeIn(250);
+}
+
+function stopLoaderAnimation() {
+  clearInterval(loaderInterval);
+  $("#loader").fadeOut(300);
+}
+
 // Main function to fetch details, recommendations, and cast
 async function load_details(title, mediaType, id) {
-  $("#loader").css('display', 'flex').hide().fadeIn(250);
+  startLoaderAnimation();
   $('.fail').fadeOut(200);
+
 
   try {
     let selectedId = id;
@@ -165,7 +199,7 @@ async function load_details(title, mediaType, id) {
         const itemTitle = item.title || item.name;
         const itemPoster = item.poster_path 
           ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
-          : 'https://via.placeholder.com/240x360?text=No+Poster';
+          : "data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'240\' height=\'360\' viewBox=\'0 0 240 360\'><rect width=\'240\' height=\'360\' fill=\'%23131722\'/><text x=\'50%\' y=\'48%\' fill=\'%2364748b\' font-family=\'sans-serif\' font-size=\'32\' text-anchor=\'middle\'>🎬</text><text x=\'50%\' y=\'62%\' fill=\'%2394a3b8\' font-family=\'sans-serif\' font-size=\'14\' font-weight=\'600\' text-anchor=\'middle\'>No Poster</text></svg>";
         const itemType = item.media_type || selectedType;
 
         recMovies.push(itemTitle);
@@ -200,7 +234,9 @@ async function load_details(title, mediaType, id) {
       castIds.push(cast.id);
       castNames.push(cast.name || 'Unknown');
       castChars.push(cast.character || 'Cast');
-      castProfiles.push(cast.profile_path ? `https://image.tmdb.org/t/p/w500${cast.profile_path}` : 'https://via.placeholder.com/240x360?text=No+Photo');
+      castProfiles.push(cast.profile_path 
+        ? `https://image.tmdb.org/t/p/w500${cast.profile_path}` 
+        : "data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'240\' height=\'360\' viewBox=\'0 0 240 360\'><rect width=\'240\' height=\'360\' fill=\'%23131722\'/><text x=\'50%\' y=\'48%\' fill=\'%2364748b\' font-family=\'sans-serif\' font-size=\'32\' text-anchor=\'middle\'>👤</text><text x=\'50%\' y=\'62%\' fill=\'%2394a3b8\' font-family=\'sans-serif\' font-size=\'14\' font-weight=\'600\' text-anchor=\'middle\'>No Photo</text></svg>");
       
       const bday = actorInfo.birthday ? new Date(actorInfo.birthday).toDateString().split(' ').slice(1).join(' ') : 'N/A';
       castBdays.push(bday);
@@ -211,7 +247,7 @@ async function load_details(title, mediaType, id) {
     // Step 5: Format Media Details
     const poster = details.poster_path 
       ? `https://image.tmdb.org/t/p/original${details.poster_path}` 
-      : 'https://via.placeholder.com/260x390?text=No+Poster';
+      : "data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'240\' height=\'360\' viewBox=\'0 0 240 360\'><rect width=\'240\' height=\'360\' fill=\'%23131722\'/><text x=\'50%\' y=\'48%\' fill=\'%2364748b\' font-family=\'sans-serif\' font-size=\'32\' text-anchor=\'middle\'>🎬</text><text x=\'50%\' y=\'62%\' fill=\'%2394a3b8\' font-family=\'sans-serif\' font-size=\'14\' font-weight=\'600\' text-anchor=\'middle\'>No Poster</text></svg>";
     const overview = details.overview || 'No storyline overview available.';
     const rating = details.vote_average ? Number(details.vote_average).toFixed(1) : 'N/A';
     const voteCount = details.vote_count ? Number(details.vote_count).toLocaleString() : '0';
@@ -281,7 +317,7 @@ async function load_details(title, mediaType, id) {
       data: payload,
       dataType: 'html',
       complete: function() {
-        $("#loader").fadeOut(300);
+        stopLoaderAnimation();
       },
       success: function(response) {
         $('#featuredSection').hide();
@@ -297,14 +333,16 @@ async function load_details(title, mediaType, id) {
       },
       error: function(err) {
         console.error("Recommend error:", err);
+        stopLoaderAnimation();
         $('.fail').fadeIn(300);
       }
     });
 
   } catch (error) {
     console.error("Error loading movie/series details:", error);
-    $("#loader").fadeOut(250);
+    stopLoaderAnimation();
     $('.fail').fadeIn(300);
     $('.results').fadeOut(200);
   }
 }
+

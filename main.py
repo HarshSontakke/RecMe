@@ -69,7 +69,7 @@ POPULAR_TITLES = [
         'title': 'Game of Thrones',
         'media_type': 'tv',
         'id': 1399,
-        'poster': 'https://image.tmdb.org/t/p/w500/1XS1oqL89opfnbLl8WnZY1il1u8.jpg',
+        'poster': 'https://image.tmdb.org/t/p/w500/7WUHnWGx5OO145IRxPDUkQSh4C7.jpg',
         'year': '2011',
         'rating': '8.4',
         'genres': 'Drama, Fantasy'
